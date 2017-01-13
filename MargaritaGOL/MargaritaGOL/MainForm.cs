@@ -16,18 +16,20 @@ namespace MargaritaGOL
         private int cellHeight;
         private int nrOfColumns;
         private int nrOfRows;
+        private int generationNumber;
         private GOLHandler handler;
         private CellState[,] cellGrid;
-        public List<CellState> SavedGeneration;
+        //public List<CellState> SavedGeneration;
         public MainForm()
         {
             cellWidth = 20;
             cellHeight = 20;
             nrOfColumns = 14;
             nrOfRows = 13;
+            generationNumber = 1;
             cellGrid = new CellState [nrOfRows, nrOfColumns];
             handler = new GOLHandler(nrOfRows, nrOfColumns);
-            SavedGeneration = new List<CellState>();
+            //SavedGeneration = new List<CellState>();
             InitializeComponent(); 
         }
  
@@ -101,42 +103,43 @@ namespace MargaritaGOL
             }
         }
 
-        private void SaveGame()
-        {
-            for(int y = 0; y < nrOfRows; y++)
-            {
-                for(int x = 0; x < nrOfColumns; x++)
-                {
-                    if(cellGrid[y, x].IsAlive)
-                    {
-                        cellGrid[y, x].XCord = x;
-                        cellGrid[y, x].YCord = y;
-                    }           
-                }
-            }
+        //private void SaveGame()
+        //{
+        //    for(int y = 0; y < nrOfRows; y++)
+        //    {
+        //        for(int x = 0; x < nrOfColumns; x++)
+        //        {
+        //            if(cellGrid[y, x].IsAlive)
+        //            {
+        //                cellGrid[y, x].XCord = x;
+        //                cellGrid[y, x].YCord = y;
+        //            }           
+        //        }
+        //    }
 
-            foreach (CellState cellToCopy in cellGrid)
-            {
-                if (cellToCopy.IsAlive)
-                {
-                    CellState copiedCell = new CellState();
+        //    foreach (CellState cellToCopy in cellGrid)
+        //    {
+        //        if (cellToCopy.IsAlive)
+        //        {
+        //            CellState copiedCell = new CellState();
 
-                    copiedCell.IsAlive = true;
-                    copiedCell.Neighbours = cellToCopy.Neighbours;
-                    copiedCell.XCord = cellToCopy.XCord;
-                    copiedCell.YCord = cellToCopy.YCord;
+        //            copiedCell.IsAlive = true;
+        //            copiedCell.Neighbours = cellToCopy.Neighbours;
+        //            copiedCell.XCord = cellToCopy.XCord;
+        //            copiedCell.YCord = cellToCopy.YCord;
 
-                    SavedGeneration.Add(copiedCell);
-                }
-            }
+        //            SavedGeneration.Add(copiedCell);
+        //        }
+        //    }
 
-         }
+        // }
 
         private void GOLButton_Click(object sender, EventArgs e)
         {
+            generationLabel.Text = "Generation: " + generationNumber++.ToString();
             handler.CheckNeighbours(cellGrid);
-            UpdateGameBoard(cellGrid);
-            handler.SaveGame(cellGrid);
+            handler.SaveGame(cellGrid, generationNumber);
+            UpdateGameBoard(cellGrid); 
         }
     }
 }
