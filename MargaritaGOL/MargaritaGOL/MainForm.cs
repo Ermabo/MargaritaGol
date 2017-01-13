@@ -138,7 +138,7 @@ namespace MargaritaGOL
         {
             generationLabel.Text = "Generation: " + generationNumber++.ToString();
             handler.CheckNeighbours(cellGrid);
-            handler.SaveGame(cellGrid, generationNumber);
+            handler.SaveGeneration(cellGrid, generationNumber);
             UpdateGameBoard(cellGrid); 
         }
     }

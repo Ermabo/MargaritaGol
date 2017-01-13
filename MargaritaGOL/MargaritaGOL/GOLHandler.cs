@@ -25,11 +25,12 @@ namespace MargaritaGOL
             //SavedGame = new List<List<CellState>>();
             //SavedGeneraton = new List<CellState>();
             SavedGames = new List<Game>();
+            currentGame = new Game();
         }
 
        
 
-        public void SaveGame(CellState[,] cellGrid, int generationNumber)
+        public void SaveGeneration(CellState[,] cellGrid, int generationNumber)
         {
             for (int y = 0; y < cellGrid.GetLength(0); y++)
             {
@@ -60,10 +61,13 @@ namespace MargaritaGOL
                 }
             }
 
-            currentGame = new Game();
             currentGame.GenerationList.Add(currentGeneration);
-            SavedGames.Add(currentGame);
+        }
 
+        public void SaveGame()
+        {
+            currentGame.Name = DateTime.Now.ToString();
+            SavedGames.Add(currentGame);
         }
         public CellState[,] CheckNeighbours(CellState[,] recievedCellGrid)
         {
