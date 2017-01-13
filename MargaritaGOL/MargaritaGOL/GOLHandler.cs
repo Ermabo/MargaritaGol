@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace MargaritaGOL
 {
-    class GOLHandler
+    public class GOLHandler
     {
-        public List<CellState> SavedGeneraton;
-        public List<List<CellState>> SavedGame;
+        //public List<CellState> SavedGeneraton;
+        //public List<List<CellState>> SavedGame;
+        //Not sure if needed
+
+        private Game currentGame;
+        private Generation currentGeneration;
+        public List<Game> SavedGames;
         private int currentRow;
         private int currentCol;
 
@@ -17,13 +22,14 @@ namespace MargaritaGOL
 
         public GOLHandler(int yRow, int xCol)
         {
-            SavedGame = new List<List<CellState>>();
-            SavedGeneraton = new List<CellState>();
+            //SavedGame = new List<List<CellState>>();
+            //SavedGeneraton = new List<CellState>();
+            SavedGames = new List<Game>();
         }
 
        
 
-        public void SaveGame(CellState[,] cellGrid)
+        public void SaveGame(CellState[,] cellGrid, int generationNumber)
         {
             for (int y = 0; y < cellGrid.GetLength(0); y++)
             {
@@ -37,6 +43,8 @@ namespace MargaritaGOL
                 }
             }
 
+            currentGeneration = new Generation(generationNumber);
+
             foreach (CellState cellToCopy in cellGrid)
             {
                 if (cellToCopy.IsAlive)
@@ -48,11 +56,14 @@ namespace MargaritaGOL
                     copiedCell.XCord = cellToCopy.XCord;
                     copiedCell.YCord = cellToCopy.YCord;
 
-                    SavedGeneraton.Add(copiedCell);
+                    currentGeneration.CellList.Add(copiedCell);
                 }
             }
 
-            SavedGame.Add(SavedGeneraton);
+            currentGame = new Game();
+            currentGame.GenerationList.Add(currentGeneration);
+            SavedGames.Add(currentGame);
+
         }
         public CellState[,] CheckNeighbours(CellState[,] recievedCellGrid)
         {
