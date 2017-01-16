@@ -17,28 +17,30 @@ namespace MargaritaGOL
         private int nrOfColumns;
         private int nrOfRows;
         private int generationNumber;
-        //private bool gameRunning;
         private bool replayRunning;
         private GOLHandler handler;
         private CellState[,] cellGrid;
         private List<Generation> savedGenerations;
-        //public List<CellState> SavedGeneration;
+        Panel buttonPanel;
         public MainForm()
         {
-            cellWidth = 20;
-            cellHeight = 20;
-            nrOfColumns = 40;
-            nrOfRows = 30;
+            cellWidth = 30;
+            cellHeight = 30;
+            nrOfColumns = 30;
+            nrOfRows = 20;
             generationNumber = 1;
             cellGrid = new CellState [nrOfRows, nrOfColumns];
             handler = new GOLHandler(nrOfRows, nrOfColumns);
+            buttonPanel = new Panel();
             InitializeComponent();
+            loadButton.Enabled = false;
+            deleteButton.Enabled = false;
             PopulateListBox();
         }
  
         
                 
-        Panel Panel1 = new Panel();
+        
 
         /// <summary>
         /// Loads the MainForm
@@ -47,10 +49,11 @@ namespace MargaritaGOL
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Controls.Add(Panel1);
-            Panel1.Location = new Point(0, 0);
-            Panel1.Size = new Size(cellWidth * nrOfColumns, cellHeight * nrOfRows);
-            Panel1.Visible = true;
+            this.Controls.Add(buttonPanel);
+            buttonPanel.Location = new Point(100, 50);
+            buttonPanel.Size = new Size(cellWidth * nrOfColumns, cellHeight * nrOfRows);
+            buttonPanel.Visible = true;
+
 
             for (int selectedRow = 0; selectedRow < nrOfRows; selectedRow++)
             {
@@ -65,7 +68,7 @@ namespace MargaritaGOL
                     cell.BackColor = Color.White;
 
                     cell.Click += Cell_Click;
-                    Panel1.Controls.Add(cell);
+                    buttonPanel.Controls.Add(cell);
                 }
             }
         }
@@ -92,7 +95,7 @@ namespace MargaritaGOL
 
         public void NextGeneration()
         {
-            foreach(Button cell in Panel1.Controls)
+            foreach(Button cell in buttonPanel.Controls)
             {
                 var row = cell.Top / cellHeight;
                 var col = cell.Left / cellWidth;
@@ -118,7 +121,7 @@ namespace MargaritaGOL
         public void DisplayGeneration()
         {
             //todo: Baka in den här metoden i NextGen(?)
-            foreach (Button cell in Panel1.Controls)
+            foreach (Button cell in buttonPanel.Controls)
             {
                 var row = cell.Top / cellHeight;
                 var col = cell.Left / cellWidth;
@@ -170,12 +173,15 @@ namespace MargaritaGOL
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            savedGamesListBox.ClearSelected();
             ResetGame();
+            savedGamesListBox.ClearSelected();
         }
 
         private void ResetGame()
         {
+            loadButton.Enabled = false;
+            deleteButton.Enabled = false;
+            labelLoaded.Visible = false;
             ClearBoard();
             handler.ClearGenerationList();
             generationNumber = 1;
@@ -184,7 +190,7 @@ namespace MargaritaGOL
 
         private void ClearBoard()
         {
-            foreach (Control cell in Panel1.Controls)
+            foreach (Control cell in buttonPanel.Controls)
             {
                 cell.BackColor = Color.White;
             }
@@ -228,8 +234,10 @@ namespace MargaritaGOL
         {
             ResetGame();
             replayRunning = true;
+            labelLoaded.Visible = true;
             Game gameToLoad = (Game)savedGamesListBox.SelectedItem;
             savedGenerations = handler.LoadSavedGame(gameToLoad.Id);
+            savedGamesListBox.ClearSelected();
         }
 
         private void generationTimer_Tick(object sender, EventArgs e)
@@ -269,7 +277,12 @@ namespace MargaritaGOL
 
         private void savedGamesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ResetGame();
+            if(savedGamesListBox.SelectedItem != null)
+            {
+                loadButton.Enabled = true;
+                deleteButton.Enabled = true;
+            }
+            
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
@@ -288,6 +301,13 @@ namespace MargaritaGOL
                     }
 
                     db.Generations.Remove(gen);
+
+                    if (savedGamesListBox.Items != null)
+                    {
+                        deleteButton.Enabled = false;
+                        loadButton.Enabled = false;
+                    }
+                        
                 }
 
                 if (gameToDelete != null)
