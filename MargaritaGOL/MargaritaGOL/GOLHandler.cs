@@ -17,19 +17,25 @@ namespace MargaritaGOL
         public List<Game> SavedGames;
         private int currentRow;
         private int currentCol;
+        private int nrOfRows;
+        private int nrOfColumns;
+        private CellState[,] cellGrid;
 
         
 
-        public GOLHandler(int yRow, int xCol)
+        public GOLHandler(int y, int x)
         {
             //SavedGame = new List<List<CellState>>();
             //SavedGeneraton = new List<CellState>();
             SavedGames = new List<Game>();
+            currentGame = new Game();
+            nrOfRows = y;
+            nrOfColumns = x;
         }
 
        
 
-        public void SaveGame(CellState[,] cellGrid, int generationNumber)
+        public void SaveGeneration(CellState[,] cellGrid, int generationNumber)
         {
             for (int y = 0; y < cellGrid.GetLength(0); y++)
             {
@@ -60,10 +66,42 @@ namespace MargaritaGOL
                 }
             }
 
-            currentGame = new Game();
             currentGame.GenerationList.Add(currentGeneration);
-            SavedGames.Add(currentGame);
+        }
 
+        public void SaveGame()
+        {
+            Game gameToSave = new Game(currentGame);
+            SavedGames.Add(gameToSave);
+        }
+
+        //public CellState[,] LoadSavedGame(Game gameToLoad)
+        //{
+
+        //    cellGrid = new CellState[nrOfRows, nrOfColumns];
+
+        //    for(currentRow = 0; currentRow < nrOfRows; currentRow++)
+        //    {
+        //        for(currentCol = 0; currentCol < nrOfColumns; currentCol++)
+        //        {
+        //            cellGrid[currentRow, currentCol] = new CellState();
+        //        }
+        //    }
+
+        //    foreach (Generation gen in gameToLoad.GenerationList)
+        //    {
+        //        foreach(CellState cell in gen.CellList)
+        //        {
+        //            cellGrid[(int)cell.YCord, (int)cell.XCord] = cell;
+        //        }
+        //    }
+
+        //    return cellGrid;
+        //}
+
+        public void ClearGenerationList()
+        {
+            currentGame.GenerationList.Clear();
         }
         public CellState[,] CheckNeighbours(CellState[,] recievedCellGrid)
         {

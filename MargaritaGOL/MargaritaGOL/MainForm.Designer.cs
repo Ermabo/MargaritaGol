@@ -28,14 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.GOLButton = new System.Windows.Forms.Button();
             this.generationLabel = new System.Windows.Forms.Label();
             this.savedGamesBox = new System.Windows.Forms.ComboBox();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.resetButton = new System.Windows.Forms.Button();
+            this.savedGamesListBox = new System.Windows.Forms.ListBox();
+            this.loadButton = new System.Windows.Forms.Button();
+            this.generationTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // GOLButton
             // 
-            this.GOLButton.Location = new System.Drawing.Point(541, 135);
+            this.GOLButton.Location = new System.Drawing.Point(441, 127);
             this.GOLButton.Name = "GOLButton";
             this.GOLButton.Size = new System.Drawing.Size(75, 23);
             this.GOLButton.TabIndex = 0;
@@ -46,7 +52,7 @@
             // generationLabel
             // 
             this.generationLabel.AutoSize = true;
-            this.generationLabel.Location = new System.Drawing.Point(545, 161);
+            this.generationLabel.Location = new System.Drawing.Point(478, 182);
             this.generationLabel.Name = "generationLabel";
             this.generationLabel.Size = new System.Drawing.Size(71, 13);
             this.generationLabel.TabIndex = 1;
@@ -55,10 +61,53 @@
             // savedGamesBox
             // 
             this.savedGamesBox.FormattingEnabled = true;
-            this.savedGamesBox.Location = new System.Drawing.Point(519, 80);
+            this.savedGamesBox.Location = new System.Drawing.Point(441, 198);
             this.savedGamesBox.Name = "savedGamesBox";
-            this.savedGamesBox.Size = new System.Drawing.Size(121, 21);
+            this.savedGamesBox.Size = new System.Drawing.Size(153, 21);
             this.savedGamesBox.TabIndex = 2;
+            // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(519, 127);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 3;
+            this.saveButton.Text = "Save Game";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(441, 156);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(75, 23);
+            this.resetButton.TabIndex = 4;
+            this.resetButton.Text = "Reset";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // savedGamesListBox
+            // 
+            this.savedGamesListBox.FormattingEnabled = true;
+            this.savedGamesListBox.Location = new System.Drawing.Point(441, 23);
+            this.savedGamesListBox.Name = "savedGamesListBox";
+            this.savedGamesListBox.Size = new System.Drawing.Size(153, 95);
+            this.savedGamesListBox.TabIndex = 5;
+            // 
+            // loadButton
+            // 
+            this.loadButton.Location = new System.Drawing.Point(519, 156);
+            this.loadButton.Name = "loadButton";
+            this.loadButton.Size = new System.Drawing.Size(75, 23);
+            this.loadButton.TabIndex = 6;
+            this.loadButton.Text = "Load Game";
+            this.loadButton.UseVisualStyleBackColor = true;
+            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+            // 
+            // generationTimer
+            // 
+            this.generationTimer.Interval = 1000;
+            this.generationTimer.Tick += new System.EventHandler(this.generationTimer_Tick);
             // 
             // MainForm
             // 
@@ -66,6 +115,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(652, 428);
+            this.Controls.Add(this.loadButton);
+            this.Controls.Add(this.savedGamesListBox);
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.savedGamesBox);
             this.Controls.Add(this.generationLabel);
             this.Controls.Add(this.GOLButton);
@@ -82,6 +135,11 @@
         private System.Windows.Forms.Button GOLButton;
         private System.Windows.Forms.Label generationLabel;
         private System.Windows.Forms.ComboBox savedGamesBox;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button resetButton;
+        private System.Windows.Forms.ListBox savedGamesListBox;
+        private System.Windows.Forms.Button loadButton;
+        private System.Windows.Forms.Timer generationTimer;
     }
 }
 

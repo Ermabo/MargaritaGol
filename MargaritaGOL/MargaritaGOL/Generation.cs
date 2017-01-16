@@ -17,5 +17,16 @@ namespace MargaritaGOL
             Id = generationNumber;
             CellList = new List<CellState>();
         }
+
+        public Generation(Generation genToCopy)
+        {
+            this.Id = genToCopy.Id;
+            CellList = new List<CellState>();
+            foreach (CellState cellToCopy in genToCopy.CellList)
+            {
+                CellState newCell = new CellState(cellToCopy);
+                CellList.Add(newCell);
+            }
+        }
     }
 }
