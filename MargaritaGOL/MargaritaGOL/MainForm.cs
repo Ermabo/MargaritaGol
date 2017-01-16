@@ -281,7 +281,22 @@ namespace MargaritaGOL
         private void generationTimer_Tick(object sender, EventArgs e)
         {
 
-            //Todo: Cellerna nollställs aldrig, måste nollställas efter varje tick
+            
+
+            foreach (Control cell in Panel1.Controls)
+            {
+                cell.BackColor = Color.White;
+            }
+
+            foreach (CellState cell in cellGrid)
+            {
+                cell.IsAlive = false;
+                cell.Neighbours = 0;
+                cell.XCord = null;
+                cell.YCord = null;
+            }
+
+
             if (generationNumber <= savedGenerations.Count)
             {
                 PlaySavedGame(generationNumber);
