@@ -8,6 +8,7 @@ namespace MargaritaGOL
 {
     public class GOLHandler
     {
+        //private CellState[,] cellGrid;
         //public List<CellState> SavedGeneraton;
         //public List<List<CellState>> SavedGame;
         //Not sure if needed
@@ -19,7 +20,6 @@ namespace MargaritaGOL
         private int currentCol;
         private int nrOfRows;
         private int nrOfColumns;
-        private CellState[,] cellGrid;
 
         
 
@@ -55,13 +55,7 @@ namespace MargaritaGOL
             {
                 if (cellToCopy.IsAlive)
                 {
-                    CellState copiedCell = new CellState();
-
-                    copiedCell.IsAlive = true;
-                    copiedCell.Neighbours = cellToCopy.Neighbours;
-                    copiedCell.XCord = cellToCopy.XCord;
-                    copiedCell.YCord = cellToCopy.YCord;
-
+                    CellState copiedCell = new CellState(cellToCopy);
                     currentGeneration.CellList.Add(copiedCell);
                 }
             }
@@ -72,32 +66,37 @@ namespace MargaritaGOL
         public void SaveGame()
         {
             Game gameToSave = new Game(currentGame);
+
+            using (GOLContext db = new GOLContext())
+            {
+                db.Games.Add(gameToSave);
+                db.SaveChanges();
+            }
+            
             SavedGames.Add(gameToSave);
         }
 
-        //public CellState[,] LoadSavedGame(Game gameToLoad)
-        //{
+        public List<Generation> LoadSavedGame(int index)
+        {
 
-        //    cellGrid = new CellState[nrOfRows, nrOfColumns];
+            List<Generation> savedGenerations = new List<Generation>();
 
-        //    for(currentRow = 0; currentRow < nrOfRows; currentRow++)
-        //    {
-        //        for(currentCol = 0; currentCol < nrOfColumns; currentCol++)
-        //        {
-        //            cellGrid[currentRow, currentCol] = new CellState();
-        //        }
-        //    }
+            using (GOLContext db = new GOLContext())
+            {
 
-        //    foreach (Generation gen in gameToLoad.GenerationList)
-        //    {
-        //        foreach(CellState cell in gen.CellList)
-        //        {
-        //            cellGrid[(int)cell.YCord, (int)cell.XCord] = cell;
-        //        }
-        //    }
+                Game loadedGame = (from Games in db.Games
+                                 where Games.Id == index
+                                 select Games).FirstOrDefault();
 
-        //    return cellGrid;
-        //}
+                foreach (Generation gen in loadedGame.GenerationList)
+                {
+                    Generation newGen = new Generation(gen);
+                    savedGenerations.Add(newGen);
+                }
+            }
+
+            return savedGenerations;
+        }
 
         public void ClearGenerationList()
         {
