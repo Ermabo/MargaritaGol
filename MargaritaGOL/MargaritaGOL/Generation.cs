@@ -10,8 +10,13 @@ namespace MargaritaGOL
     {
         public int Id { get; set; }
 
-        public List<CellState> CellList;
+        public virtual List<CellState> CellList { get; set; }
+        public virtual Game Game { get; set; }
 
+        public Generation()
+        {
+
+        }
         public Generation(int generationNumber)
         {
             Id = generationNumber;

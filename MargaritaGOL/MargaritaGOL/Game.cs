@@ -10,7 +10,7 @@ namespace MargaritaGOL
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<Generation> GenerationList;
+        public virtual List<Generation> GenerationList { get; set; }
         public Game()
         {
             GenerationList = new List<Generation>();

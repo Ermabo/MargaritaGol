@@ -17,6 +17,8 @@ namespace MargaritaGOL
         private int nrOfColumns;
         private int nrOfRows;
         private int generationNumber;
+        //private bool gameRunning;
+        private bool replayRunning;
         private GOLHandler handler;
         private CellState[,] cellGrid;
         private List<Generation> savedGenerations;
@@ -25,13 +27,13 @@ namespace MargaritaGOL
         {
             cellWidth = 20;
             cellHeight = 20;
-            nrOfColumns = 14;
-            nrOfRows = 13;
+            nrOfColumns = 40;
+            nrOfRows = 30;
             generationNumber = 1;
             cellGrid = new CellState [nrOfRows, nrOfColumns];
             handler = new GOLHandler(nrOfRows, nrOfColumns);
-            //SavedGeneration = new List<CellState>();
-            InitializeComponent(); 
+            InitializeComponent();
+            PopulateListBox();
         }
  
         
@@ -55,6 +57,7 @@ namespace MargaritaGOL
                 for (int selectedCol = 0; selectedCol < nrOfColumns; selectedCol++)
                 {
                     Button cell = new Button();
+                    //cell.FlatStyle = FlatStyle.Flat;
                     CellState state = new CellState();
                     cellGrid[selectedRow, selectedCol] = state;
                     cell.Location = new Point((selectedCol * cellWidth), (selectedRow * cellHeight));
@@ -87,23 +90,23 @@ namespace MargaritaGOL
         }
 
 
-        public void NextGeneration(CellState[,] cellGeneration)
+        public void NextGeneration()
         {
             foreach(Button cell in Panel1.Controls)
             {
                 var row = cell.Top / cellHeight;
                 var col = cell.Left / cellWidth;
-                var neighbours = cellGeneration[row, col].Neighbours;
+                var neighbours = cellGrid[row, col].Neighbours;
 
                 if(neighbours < 3 || neighbours > 4)
                 {
-                    cellGeneration[row, col].IsAlive = false;
+                    cellGrid[row, col].IsAlive = false;
                     cell.BackColor = Color.White;
                 }
 
                 else if(neighbours == 3)
                 {
-                    cellGeneration[row, col].IsAlive = true;
+                    cellGrid[row, col].IsAlive = true;
                     cell.BackColor = Color.Black;
                 }
 
@@ -112,7 +115,7 @@ namespace MargaritaGOL
             generationLabel.Text = "Generation: " + generationNumber.ToString();
         }
 
-        public void DisplayGeneration(CellState[,] cellGeneration)
+        public void DisplayGeneration()
         {
             //todo: Baka in den här metoden i NextGen(?)
             foreach (Button cell in Panel1.Controls)
@@ -120,48 +123,18 @@ namespace MargaritaGOL
                 var row = cell.Top / cellHeight;
                 var col = cell.Left / cellWidth;
 
-                if (cellGeneration[row, col].IsAlive == false)
+                if (cellGrid[row, col].IsAlive == false)
                 {
                     cell.BackColor = Color.White;
                 }
 
-                else if (cellGeneration[row, col].IsAlive == true)
+                else if (cellGrid[row, col].IsAlive == true)
                 {
                     cell.BackColor = Color.Black;
                 }
             }
         }
 
-        //private void SaveGame()
-        //{
-        //    for(int y = 0; y < nrOfRows; y++)
-        //    {
-        //        for(int x = 0; x < nrOfColumns; x++)
-        //        {
-        //            if(cellGrid[y, x].IsAlive)
-        //            {
-        //                cellGrid[y, x].XCord = x;
-        //                cellGrid[y, x].YCord = y;
-        //            }           
-        //        }
-        //    }
-
-        //    foreach (CellState cellToCopy in cellGrid)
-        //    {
-        //        if (cellToCopy.IsAlive)
-        //        {
-        //            CellState copiedCell = new CellState();
-
-        //            copiedCell.IsAlive = true;
-        //            copiedCell.Neighbours = cellToCopy.Neighbours;
-        //            copiedCell.XCord = cellToCopy.XCord;
-        //            copiedCell.YCord = cellToCopy.YCord;
-
-        //            SavedGeneration.Add(copiedCell);
-        //        }
-        //    }
-
-        // }
 
 
         /// <summary>
@@ -171,31 +144,46 @@ namespace MargaritaGOL
         /// <param name="e"></param>
         private void GOLButton_Click(object sender, EventArgs e)
         {
-            handler.CheckNeighbours(cellGrid);
-            handler.SaveGeneration(cellGrid, generationNumber);
-            NextGeneration(cellGrid); 
+            if(generationTimer.Enabled)
+            {
+                generationTimer.Stop();
+                GOLButton.Text = "Start";
+            }
+            else
+            {
+                generationTimer.Start();
+                GOLButton.Text = "Stop";
+            }
+                 
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
             if(generationNumber == 1) // Saves the very first generation at new game or reset
                 handler.SaveGeneration(cellGrid, generationNumber);
-            
+
+            handler.SaveGeneration(cellGrid, generationNumber);
             handler.SaveGame();
             PopulateListBox();
         }
 
+
         private void resetButton_Click(object sender, EventArgs e)
         {
-            ResetBoard();
+            savedGamesListBox.ClearSelected();
+            ResetGame();
         }
 
-        private void ResetBoard()
+        private void ResetGame()
         {
+            ClearBoard();
             handler.ClearGenerationList();
             generationNumber = 1;
             generationLabel.Text = "Generation: " + generationNumber.ToString();
+        }
 
+        private void ClearBoard()
+        {
             foreach (Control cell in Panel1.Controls)
             {
                 cell.BackColor = Color.White;
@@ -214,97 +202,129 @@ namespace MargaritaGOL
         {
             savedGamesListBox.Items.Clear();
 
-            foreach (Game g in handler.SavedGames)
+            using (GOLContext db = new GOLContext())
             {
-                savedGamesListBox.Items.Add(g);
-            }
-        }
-
-        private void LoadSavedGame(Game gameToLoad)
-        {
-
-            //Probably not needed
-            //cellGrid = new CellState[nrOfRows, nrOfColumns];
-
-            //for (int selectedRow = 0; selectedRow < nrOfRows; selectedRow++)
-            //{
-            //    for (int selectedCol = 0; selectedCol < nrOfColumns; selectedCol++)
-            //    {
-            //        cellGrid[selectedRow, selectedCol] = new CellState();
-            //    }
-            //}
-            savedGenerations = new List<Generation>();
-
-            foreach (Generation gen in gameToLoad.GenerationList)
-            {
-
-                //foreach (CellState cell in gen.CellList)
-                //{
-                //    cellGrid[(int)cell.YCord, (int)cell.XCord] = cell;
-                //}
-
-                Generation newGen = new Generation(gen);
-                savedGenerations.Add(newGen);
-
+                foreach(Game g in db.Games)
+                {
+                    savedGamesListBox.Items.Add(g);
+                }
             }
 
-
-
         }
+
 
         private void PlaySavedGame(int genToPlay)
         {
-            genToPlay -= 1;
+            genToPlay -= 1; //-1 because the first element in a list is 0
             foreach (CellState cell in savedGenerations[genToPlay].CellList)
             {
                 cellGrid[(int)cell.YCord, (int)cell.XCord] = new CellState(cell);
             }
 
-            DisplayGeneration(cellGrid);
+            DisplayGeneration();
         }
 
         private void loadButton_Click(object sender, EventArgs e)
         {
-            ResetBoard();
-            LoadSavedGame((Game)savedGamesListBox.SelectedItem);
-            generationTimer.Start();
-
-            //Todo: Gör så att den går igenom alla generations och tickar igenom dom, flytta allt under till en metod
-            //foreach (CellState cell in savedGenerations[0].CellList)
-            //{
-            //    cellGrid[(int)cell.YCord, (int)cell.XCord] = new CellState(cell);
-            //}
-
-            //ShowFirstGeneration(cellGrid);
+            ResetGame();
+            replayRunning = true;
+            Game gameToLoad = (Game)savedGamesListBox.SelectedItem;
+            savedGenerations = handler.LoadSavedGame(gameToLoad.Id);
         }
 
         private void generationTimer_Tick(object sender, EventArgs e)
         {
 
-            
-
-            foreach (Control cell in Panel1.Controls)
+            switch (replayRunning)
             {
-                cell.BackColor = Color.White;
+                case true:
+
+                    if (generationNumber <= savedGenerations.Count)
+                    {
+                        ClearBoard();
+                        PlaySavedGame(generationNumber);
+                        generationNumber++;
+                        generationLabel.Text = "Generation: " + (generationNumber - 1).ToString();
+                    }
+                    else
+                    {
+                        generationTimer.Stop();
+                        GOLButton.Text = "Start";
+                        replayRunning = false;
+                    }
+                        
+                 break;
+
+                case false:
+
+                    handler.CheckNeighbours(cellGrid);
+                    handler.SaveGeneration(cellGrid, generationNumber);
+                    NextGeneration();
+
+                    break;
             }
 
-            foreach (CellState cell in cellGrid)
+
+        }
+
+        private void savedGamesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ResetGame();
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            using(GOLContext db = new GOLContext())
             {
-                cell.IsAlive = false;
-                cell.Neighbours = 0;
-                cell.XCord = null;
-                cell.YCord = null;
+                Game test = (Game)savedGamesListBox.SelectedItem;
+
+                var gameToDelete = db.Games.SingleOrDefault(x => x.Id == test.Id);
+
+                foreach (Generation gen in gameToDelete.GenerationList.ToList())
+                {
+                    foreach (CellState cell in gen.CellList.ToList())
+                    {
+                        db.CellStates.Remove(cell);
+                    }
+
+                    db.Generations.Remove(gen);
+                }
+
+                if (gameToDelete != null)
+                {
+                    db.Games.Remove(gameToDelete);
+                    db.SaveChanges();
+                }
             }
 
+            PopulateListBox();
+        }
 
-            if (generationNumber <= savedGenerations.Count)
+        private void trackBarSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            generationTimer.Interval = trackBarSpeed.Value;
+            labelSpeed.Text = "Interval speed: " + generationTimer.Interval.ToString();
+        }
+
+        private void randomButton_Click(object sender, EventArgs e)
+        {
+            ResetGame();
+            ClearBoard();
+            Random randomRow = new Random(System.DateTime.Now.Millisecond);
+            Random randomCol = new Random(Guid.NewGuid().GetHashCode());
+            Random randomCells = new Random(Guid.NewGuid().GetHashCode());
+            int nrOfCells = randomCells.Next(20, 200);
+
+            for (int i = 0; i < nrOfCells; i++)
             {
-                PlaySavedGame(generationNumber);
-                generationNumber++;
-            }
-            else
-                generationTimer.Stop();
+                var selectedRow = randomRow.Next(1, nrOfRows);
+                var selectedCol = randomCol.Next(1, nrOfColumns);
 
+                cellGrid[selectedRow, selectedCol].IsAlive = true;
+
+            }
+
+            DisplayGeneration();
         }
     }
 }

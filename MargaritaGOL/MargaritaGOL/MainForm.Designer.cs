@@ -31,44 +31,42 @@
             this.components = new System.ComponentModel.Container();
             this.GOLButton = new System.Windows.Forms.Button();
             this.generationLabel = new System.Windows.Forms.Label();
-            this.savedGamesBox = new System.Windows.Forms.ComboBox();
             this.saveButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.savedGamesListBox = new System.Windows.Forms.ListBox();
             this.loadButton = new System.Windows.Forms.Button();
             this.generationTimer = new System.Windows.Forms.Timer(this.components);
+            this.menuGroupBox = new System.Windows.Forms.GroupBox();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.trackBarSpeed = new System.Windows.Forms.TrackBar();
+            this.labelSpeed = new System.Windows.Forms.Label();
+            this.randomButton = new System.Windows.Forms.Button();
+            this.menuGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // GOLButton
             // 
-            this.GOLButton.Location = new System.Drawing.Point(441, 127);
+            this.GOLButton.Location = new System.Drawing.Point(19, 201);
             this.GOLButton.Name = "GOLButton";
             this.GOLButton.Size = new System.Drawing.Size(75, 23);
             this.GOLButton.TabIndex = 0;
-            this.GOLButton.Text = "Next Generation";
+            this.GOLButton.Text = "Start";
             this.GOLButton.UseVisualStyleBackColor = true;
             this.GOLButton.Click += new System.EventHandler(this.GOLButton_Click);
             // 
             // generationLabel
             // 
             this.generationLabel.AutoSize = true;
-            this.generationLabel.Location = new System.Drawing.Point(478, 182);
+            this.generationLabel.Location = new System.Drawing.Point(62, 285);
             this.generationLabel.Name = "generationLabel";
             this.generationLabel.Size = new System.Drawing.Size(71, 13);
             this.generationLabel.TabIndex = 1;
             this.generationLabel.Text = "Generation: 1";
             // 
-            // savedGamesBox
-            // 
-            this.savedGamesBox.FormattingEnabled = true;
-            this.savedGamesBox.Location = new System.Drawing.Point(441, 198);
-            this.savedGamesBox.Name = "savedGamesBox";
-            this.savedGamesBox.Size = new System.Drawing.Size(153, 21);
-            this.savedGamesBox.TabIndex = 2;
-            // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(519, 127);
+            this.saveButton.Location = new System.Drawing.Point(97, 201);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 3;
@@ -78,7 +76,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(441, 156);
+            this.resetButton.Location = new System.Drawing.Point(19, 259);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 4;
@@ -89,14 +87,15 @@
             // savedGamesListBox
             // 
             this.savedGamesListBox.FormattingEnabled = true;
-            this.savedGamesListBox.Location = new System.Drawing.Point(441, 23);
+            this.savedGamesListBox.Location = new System.Drawing.Point(19, 19);
             this.savedGamesListBox.Name = "savedGamesListBox";
             this.savedGamesListBox.Size = new System.Drawing.Size(153, 95);
             this.savedGamesListBox.TabIndex = 5;
+            this.savedGamesListBox.SelectedIndexChanged += new System.EventHandler(this.savedGamesListBox_SelectedIndexChanged);
             // 
             // loadButton
             // 
-            this.loadButton.Location = new System.Drawing.Point(519, 156);
+            this.loadButton.Location = new System.Drawing.Point(97, 259);
             this.loadButton.Name = "loadButton";
             this.loadButton.Size = new System.Drawing.Size(75, 23);
             this.loadButton.TabIndex = 6;
@@ -106,8 +105,71 @@
             // 
             // generationTimer
             // 
-            this.generationTimer.Interval = 1000;
+            this.generationTimer.Interval = 300;
             this.generationTimer.Tick += new System.EventHandler(this.generationTimer_Tick);
+            // 
+            // menuGroupBox
+            // 
+            this.menuGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.menuGroupBox.Controls.Add(this.randomButton);
+            this.menuGroupBox.Controls.Add(this.labelSpeed);
+            this.menuGroupBox.Controls.Add(this.trackBarSpeed);
+            this.menuGroupBox.Controls.Add(this.deleteButton);
+            this.menuGroupBox.Controls.Add(this.savedGamesListBox);
+            this.menuGroupBox.Controls.Add(this.generationLabel);
+            this.menuGroupBox.Controls.Add(this.loadButton);
+            this.menuGroupBox.Controls.Add(this.GOLButton);
+            this.menuGroupBox.Controls.Add(this.resetButton);
+            this.menuGroupBox.Controls.Add(this.saveButton);
+            this.menuGroupBox.Location = new System.Drawing.Point(440, 12);
+            this.menuGroupBox.Name = "menuGroupBox";
+            this.menuGroupBox.Size = new System.Drawing.Size(200, 331);
+            this.menuGroupBox.TabIndex = 7;
+            this.menuGroupBox.TabStop = false;
+            this.menuGroupBox.Text = "Menu";
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Location = new System.Drawing.Point(19, 230);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(75, 23);
+            this.deleteButton.TabIndex = 7;
+            this.deleteButton.Text = "Delete Game";
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
+            // trackBarSpeed
+            // 
+            this.trackBarSpeed.Location = new System.Drawing.Point(44, 137);
+            this.trackBarSpeed.Maximum = 600;
+            this.trackBarSpeed.Minimum = 300;
+            this.trackBarSpeed.Name = "trackBarSpeed";
+            this.trackBarSpeed.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.trackBarSpeed.RightToLeftLayout = true;
+            this.trackBarSpeed.Size = new System.Drawing.Size(104, 45);
+            this.trackBarSpeed.TabIndex = 8;
+            this.trackBarSpeed.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBarSpeed.Value = 450;
+            this.trackBarSpeed.ValueChanged += new System.EventHandler(this.trackBarSpeed_ValueChanged);
+            // 
+            // labelSpeed
+            // 
+            this.labelSpeed.AutoSize = true;
+            this.labelSpeed.Location = new System.Drawing.Point(41, 121);
+            this.labelSpeed.Name = "labelSpeed";
+            this.labelSpeed.Size = new System.Drawing.Size(80, 13);
+            this.labelSpeed.TabIndex = 9;
+            this.labelSpeed.Text = "Interval speed: ";
+            // 
+            // randomButton
+            // 
+            this.randomButton.Location = new System.Drawing.Point(97, 229);
+            this.randomButton.Name = "randomButton";
+            this.randomButton.Size = new System.Drawing.Size(75, 23);
+            this.randomButton.TabIndex = 10;
+            this.randomButton.Text = "Random";
+            this.randomButton.UseVisualStyleBackColor = true;
+            this.randomButton.Click += new System.EventHandler(this.randomButton_Click);
             // 
             // MainForm
             // 
@@ -115,18 +177,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(652, 428);
-            this.Controls.Add(this.loadButton);
-            this.Controls.Add(this.savedGamesListBox);
-            this.Controls.Add(this.resetButton);
-            this.Controls.Add(this.saveButton);
-            this.Controls.Add(this.savedGamesBox);
-            this.Controls.Add(this.generationLabel);
-            this.Controls.Add(this.GOLButton);
+            this.Controls.Add(this.menuGroupBox);
             this.Name = "MainForm";
             this.Text = "GOL";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.menuGroupBox.ResumeLayout(false);
+            this.menuGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -134,12 +192,16 @@
 
         private System.Windows.Forms.Button GOLButton;
         private System.Windows.Forms.Label generationLabel;
-        private System.Windows.Forms.ComboBox savedGamesBox;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.ListBox savedGamesListBox;
         private System.Windows.Forms.Button loadButton;
         private System.Windows.Forms.Timer generationTimer;
+        private System.Windows.Forms.GroupBox menuGroupBox;
+        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.TrackBar trackBarSpeed;
+        private System.Windows.Forms.Label labelSpeed;
+        private System.Windows.Forms.Button randomButton;
     }
 }
 
