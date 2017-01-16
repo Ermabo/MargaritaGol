@@ -16,5 +16,22 @@ namespace MargaritaGOL
             GenerationList = new List<Generation>();
             Name = DateTime.Now.ToString();
         }
+
+        public Game(Game gameToCopy)
+        {
+            Name = DateTime.Now.ToString();
+            GenerationList = new List<Generation>();
+            foreach (var gen in gameToCopy.GenerationList)
+            {
+                Generation newGen = new Generation(gen);
+                GenerationList.Add(newGen);
+            }
+        }
+
+
+        public override string ToString()
+        {
+            return this.Name; 
+        }
     }
 }

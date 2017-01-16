@@ -19,6 +19,7 @@ namespace MargaritaGOL
         private int generationNumber;
         private GOLHandler handler;
         private CellState[,] cellGrid;
+        private List<Generation> savedGenerations;
         //public List<CellState> SavedGeneration;
         public MainForm()
         {
@@ -37,6 +38,11 @@ namespace MargaritaGOL
                 
         Panel Panel1 = new Panel();
 
+        /// <summary>
+        /// Loads the MainForm
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Controls.Add(Panel1);
@@ -44,14 +50,14 @@ namespace MargaritaGOL
             Panel1.Size = new Size(cellWidth * nrOfColumns, cellHeight * nrOfRows);
             Panel1.Visible = true;
 
-            for (int rowY = 0; rowY < nrOfRows; rowY++)
+            for (int selectedRow = 0; selectedRow < nrOfRows; selectedRow++)
             {
-                for (int colX = 0; colX < nrOfColumns; colX++)
+                for (int selectedCol = 0; selectedCol < nrOfColumns; selectedCol++)
                 {
                     Button cell = new Button();
                     CellState state = new CellState();
-                    cellGrid[rowY, colX] = state;
-                    cell.Location = new Point((colX * cellWidth), (rowY * cellHeight));
+                    cellGrid[selectedRow, selectedCol] = state;
+                    cell.Location = new Point((selectedCol * cellWidth), (selectedRow * cellHeight));
                     cell.Size = new Size(cellWidth, cellHeight);
                     cell.BackColor = Color.White;
 
@@ -81,9 +87,9 @@ namespace MargaritaGOL
         }
 
 
-        public void UpdateGameBoard(CellState[,] cellGeneration)
+        public void NextGeneration(CellState[,] cellGeneration)
         {
-            foreach(Control cell in Panel1.Controls)
+            foreach(Button cell in Panel1.Controls)
             {
                 var row = cell.Top / cellHeight;
                 var col = cell.Left / cellWidth;
@@ -98,6 +104,29 @@ namespace MargaritaGOL
                 else if(neighbours == 3)
                 {
                     cellGeneration[row, col].IsAlive = true;
+                    cell.BackColor = Color.Black;
+                }
+
+            }
+            generationNumber++;
+            generationLabel.Text = "Generation: " + generationNumber.ToString();
+        }
+
+        public void DisplayGeneration(CellState[,] cellGeneration)
+        {
+            //todo: Baka in den här metoden i NextGen(?)
+            foreach (Button cell in Panel1.Controls)
+            {
+                var row = cell.Top / cellHeight;
+                var col = cell.Left / cellWidth;
+
+                if (cellGeneration[row, col].IsAlive == false)
+                {
+                    cell.BackColor = Color.White;
+                }
+
+                else if (cellGeneration[row, col].IsAlive == true)
+                {
                     cell.BackColor = Color.Black;
                 }
             }
@@ -134,12 +163,133 @@ namespace MargaritaGOL
 
         // }
 
+
+        /// <summary>
+        /// Button click event that advances generation, also saves the upcoming generation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GOLButton_Click(object sender, EventArgs e)
         {
-            generationLabel.Text = "Generation: " + generationNumber++.ToString();
             handler.CheckNeighbours(cellGrid);
             handler.SaveGeneration(cellGrid, generationNumber);
-            UpdateGameBoard(cellGrid); 
+            NextGeneration(cellGrid); 
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            if(generationNumber == 1) // Saves the very first generation at new game or reset
+                handler.SaveGeneration(cellGrid, generationNumber);
+            
+            handler.SaveGame();
+            PopulateListBox();
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            ResetBoard();
+        }
+
+        private void ResetBoard()
+        {
+            handler.ClearGenerationList();
+            generationNumber = 1;
+            generationLabel.Text = "Generation: " + generationNumber.ToString();
+
+            foreach (Control cell in Panel1.Controls)
+            {
+                cell.BackColor = Color.White;
+            }
+
+            foreach (CellState cell in cellGrid)
+            {
+                cell.IsAlive = false;
+                cell.Neighbours = 0;
+                cell.XCord = null;
+                cell.YCord = null;
+            }
+        }
+
+        private void PopulateListBox()
+        {
+            savedGamesListBox.Items.Clear();
+
+            foreach (Game g in handler.SavedGames)
+            {
+                savedGamesListBox.Items.Add(g);
+            }
+        }
+
+        private void LoadSavedGame(Game gameToLoad)
+        {
+
+            //Probably not needed
+            //cellGrid = new CellState[nrOfRows, nrOfColumns];
+
+            //for (int selectedRow = 0; selectedRow < nrOfRows; selectedRow++)
+            //{
+            //    for (int selectedCol = 0; selectedCol < nrOfColumns; selectedCol++)
+            //    {
+            //        cellGrid[selectedRow, selectedCol] = new CellState();
+            //    }
+            //}
+            savedGenerations = new List<Generation>();
+
+            foreach (Generation gen in gameToLoad.GenerationList)
+            {
+
+                //foreach (CellState cell in gen.CellList)
+                //{
+                //    cellGrid[(int)cell.YCord, (int)cell.XCord] = cell;
+                //}
+
+                Generation newGen = new Generation(gen);
+                savedGenerations.Add(newGen);
+
+            }
+
+
+
+        }
+
+        private void PlaySavedGame(int genToPlay)
+        {
+            genToPlay -= 1;
+            foreach (CellState cell in savedGenerations[genToPlay].CellList)
+            {
+                cellGrid[(int)cell.YCord, (int)cell.XCord] = new CellState(cell);
+            }
+
+            DisplayGeneration(cellGrid);
+        }
+
+        private void loadButton_Click(object sender, EventArgs e)
+        {
+            ResetBoard();
+            LoadSavedGame((Game)savedGamesListBox.SelectedItem);
+            generationTimer.Start();
+
+            //Todo: Gör så att den går igenom alla generations och tickar igenom dom, flytta allt under till en metod
+            //foreach (CellState cell in savedGenerations[0].CellList)
+            //{
+            //    cellGrid[(int)cell.YCord, (int)cell.XCord] = new CellState(cell);
+            //}
+
+            //ShowFirstGeneration(cellGrid);
+        }
+
+        private void generationTimer_Tick(object sender, EventArgs e)
+        {
+
+            //Todo: Cellerna nollställs aldrig, måste nollställas efter varje tick
+            if (generationNumber <= savedGenerations.Count)
+            {
+                PlaySavedGame(generationNumber);
+                generationNumber++;
+            }
+            else
+                generationTimer.Stop();
+
         }
     }
 }
