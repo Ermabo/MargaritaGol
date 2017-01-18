@@ -8,11 +8,6 @@ namespace MargaritaGOL
 {
     public class GOLHandler
     {
-        //private CellState[,] cellGrid;
-        //public List<CellState> SavedGeneraton;
-        //public List<List<CellState>> SavedGame;
-        //Not sure if needed
-
         private Game currentGame;
         private Generation currentGeneration;
         public List<Game> SavedGames;
@@ -25,8 +20,6 @@ namespace MargaritaGOL
 
         public GOLHandler(int y, int x)
         {
-            //SavedGame = new List<List<CellState>>();
-            //SavedGeneraton = new List<CellState>();
             SavedGames = new List<Game>();
             currentGame = new Game();
             nrOfRows = y;

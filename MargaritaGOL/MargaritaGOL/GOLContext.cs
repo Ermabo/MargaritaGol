@@ -17,8 +17,10 @@ namespace MargaritaGOL
         // If you wish to target a different database and/or database provider, modify the 'GOLContext' 
         // connection string in the application configuration file.
         public GOLContext()
-            : base("GolDB")
+            : base("name = GolDB")
         {
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            AppDomain.CurrentDomain.SetData("DataDirectory", path);
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
