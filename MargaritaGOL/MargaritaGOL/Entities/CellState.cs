@@ -13,11 +13,12 @@ namespace MargaritaGOL
 
         public virtual Generation Generation { get; set; }
 
-        [NotMapped]
+        [NotMapped] // IsAlive doesn't need to be saved to DB since every saved cell is alive.
         public bool IsAlive { get; set; }
 
         public int? XCord { get; set; }
         public int? YCord { get; set; }
+        // Variables for coords are nullable since default values are valid coords and may cause confusion
         public int Neighbours { get; set; }
 
         public CellState()
@@ -28,7 +29,7 @@ namespace MargaritaGOL
             YCord = null;
         }
 
-        public CellState(CellState cellToCopy)
+        public CellState(CellState cellToCopy) // Last step in the chain-copy, copies a cellstate to avoid issues with reference-types
         {
             this.IsAlive = true;
             this.Neighbours = cellToCopy.Neighbours;

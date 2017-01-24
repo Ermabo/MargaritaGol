@@ -17,7 +17,7 @@ namespace MargaritaGOL
         private int nrOfColumns;
 
         
-
+        
         public GOLHandler(int y, int x)
         {
             SavedGames = new List<Game>();
@@ -27,7 +27,11 @@ namespace MargaritaGOL
         }
 
        
-
+        /// <summary>
+        /// Gives each live cell coords and saves the current generation to a list
+        /// </summary>
+        /// <param name="cellGrid"></param>
+        /// <param name="generationNumber"></param>
         public void SaveGeneration(CellState[,] cellGrid, int generationNumber)
         {
             for (int y = 0; y < cellGrid.GetLength(0); y++)
@@ -56,22 +60,29 @@ namespace MargaritaGOL
             currentGame.GenerationList.Add(currentGeneration);
         }
 
+        /// <summary>
+        /// Saves the current game to local-DB using Entity Framework
+        /// </summary>
         public void SaveGame()
         {
-            Game gameToSave = new Game(currentGame);
+            Game gameToSave = new Game(currentGame); //Copies the current game to avoid reference-type problems
 
             using (GOLContext db = new GOLContext())
             {
                 db.Games.Add(gameToSave);
                 db.SaveChanges();
             }
-            
+
             SavedGames.Add(gameToSave);
         }
 
+        /// <summary>
+        /// Loads the game from local-db using Entity Framework, chosen by index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public List<Generation> LoadSavedGame(int index)
         {
-
             List<Generation> savedGenerations = new List<Generation>();
 
             using (GOLContext db = new GOLContext())
@@ -95,6 +106,12 @@ namespace MargaritaGOL
         {
             currentGame.GenerationList.Clear();
         }
+
+        /// <summary>
+        /// Checks the number of live neighbours of each cell
+        /// </summary>
+        /// <param name="recievedCellGrid"></param>
+        /// <returns></returns>
         public CellState[,] CheckNeighbours(CellState[,] recievedCellGrid)
         {
             for (currentRow = 0; currentRow < recievedCellGrid.GetLength(0); currentRow++)
@@ -103,16 +120,18 @@ namespace MargaritaGOL
                 {
                     var neighbours = 0;
 
-                    for (var rowToCheck = currentRow - 1; rowToCheck < currentRow + 2; rowToCheck++)
+                    // Checks neighbours in a square around the current cell, starting from top left
+
+                    for (var rowToCheck = currentRow - 1; rowToCheck < currentRow + 2; rowToCheck++) 
                     {
-                        if (rowToCheck < 0 || rowToCheck >= recievedCellGrid.GetLength(0))
+                        if (rowToCheck < 0 || rowToCheck >= recievedCellGrid.GetLength(0)) // Fail-check to make sure index in 2d array is not out of range
                         {
                                 continue;
                         }
 
                         for (var colToCheck = currentCol - 1; colToCheck < currentCol + 2; colToCheck++)
                         {
-                            if (colToCheck < 0 || colToCheck >= recievedCellGrid.GetLength(1))
+                            if (colToCheck < 0 || colToCheck >= recievedCellGrid.GetLength(1)) // Fail-check to make sure index in 2d array is not out of range
                             {
                                 continue;
                             }
@@ -126,12 +145,8 @@ namespace MargaritaGOL
 
                     recievedCellGrid[currentRow, currentCol].Neighbours = neighbours;
                 }
-
             }
-
             return recievedCellGrid;
         }
-
-
     }
 }

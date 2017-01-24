@@ -9,13 +9,16 @@ namespace MargaritaGOL
         public DbSet<CellState> CellStates { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Generation> Generations { get; set; }
-        
+
         // Your context has been configured to use a 'GOLContext' connection string from your application's 
         // configuration file (App.config or Web.config). By default, this connection string targets the 
         // 'MargaritaGOL.GOLContext' database on your LocalDb instance. 
         // 
         // If you wish to target a different database and/or database provider, modify the 'GOLContext' 
         // connection string in the application configuration file.
+
+
+        // The local DB gets created in Debug folder
         public GOLContext()
             : base("name = GolDB")
         {

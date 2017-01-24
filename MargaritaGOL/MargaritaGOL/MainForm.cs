@@ -38,12 +38,8 @@ namespace MargaritaGOL
             PopulateListBox();
         }
  
-        
-                
-        
-
         /// <summary>
-        /// Loads the MainForm
+        /// Draws out the board of buttons
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -60,7 +56,6 @@ namespace MargaritaGOL
                 for (int selectedCol = 0; selectedCol < nrOfColumns; selectedCol++)
                 {
                     Button cell = new Button();
-                    //cell.FlatStyle = FlatStyle.Flat;
                     CellState state = new CellState();
                     cellGrid[selectedRow, selectedCol] = state;
                     cell.Location = new Point((selectedCol * cellWidth), (selectedRow * cellHeight));
@@ -73,6 +68,11 @@ namespace MargaritaGOL
             }
         }
 
+        /// <summary>
+        /// Click event for turning cells alive/dead manually
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cell_Click(object sender, EventArgs e)
         {
             Button CellClick = ((Button)sender);
@@ -92,7 +92,9 @@ namespace MargaritaGOL
             
         }
 
-
+        /// <summary>
+        /// Draws the next generation on board
+        /// </summary>
         public void NextGeneration()
         {
             foreach(Button cell in buttonPanel.Controls)
@@ -118,9 +120,12 @@ namespace MargaritaGOL
             generationLabel.Text = "Generation: " + generationNumber.ToString();
         }
 
+
+        /// <summary>
+        /// Displays the currently loaded generation
+        /// </summary>
         public void DisplayGeneration()
         {
-            //todo: Baka in den här metoden i NextGen(?)
             foreach (Button cell in buttonPanel.Controls)
             {
                 var row = cell.Top / cellHeight;
@@ -141,7 +146,7 @@ namespace MargaritaGOL
 
 
         /// <summary>
-        /// Button click event that advances generation, also saves the upcoming generation
+        /// Starts the timer, or stops it if it's started
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -160,6 +165,11 @@ namespace MargaritaGOL
                  
         }
 
+        /// <summary>
+        /// Calls all the save functions and refreshes the saved games listbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveButton_Click(object sender, EventArgs e)
         {
             if(generationNumber == 1) // Saves the very first generation at new game or reset
@@ -170,13 +180,15 @@ namespace MargaritaGOL
             PopulateListBox();
         }
 
-
         private void resetButton_Click(object sender, EventArgs e)
         {
             ResetGame();
             savedGamesListBox.ClearSelected();
         }
 
+        /// <summary>
+        /// Resets the current game
+        /// </summary>
         private void ResetGame()
         {
             loadButton.Enabled = false;
@@ -188,6 +200,9 @@ namespace MargaritaGOL
             generationLabel.Text = "Generation: " + generationNumber.ToString();
         }
 
+        /// <summary>
+        /// Clears the board to default state
+        /// </summary>
         private void ClearBoard()
         {
             foreach (Control cell in buttonPanel.Controls)
@@ -204,6 +219,9 @@ namespace MargaritaGOL
             }
         }
 
+        /// <summary>
+        /// Displays the saved games from DB
+        /// </summary>
         private void PopulateListBox()
         {
             savedGamesListBox.Items.Clear();
@@ -218,11 +236,10 @@ namespace MargaritaGOL
 
         }
 
-
         private void PlaySavedGame(int genToPlay)
         {
             genToPlay -= 1; //-1 because the first element in a list is 0
-            foreach (CellState cell in savedGenerations[genToPlay].CellList)
+            foreach (CellState cell in savedGenerations[genToPlay].CellList) //Copies the loaded generation to avoid reference-type problems
             {
                 cellGrid[(int)cell.YCord, (int)cell.XCord] = new CellState(cell);
             }
@@ -242,10 +259,9 @@ namespace MargaritaGOL
 
         private void generationTimer_Tick(object sender, EventArgs e)
         {
-
             switch (replayRunning)
             {
-                case true:
+                case true: //If there is a game loaded, it displays all the generations of that game in intervalls
 
                     if (generationNumber <= savedGenerations.Count)
                     {
@@ -263,7 +279,7 @@ namespace MargaritaGOL
                         
                  break;
 
-                case false:
+                case false: // Else if there is no game loaded, then display next generation for every intervall
 
                     handler.CheckNeighbours(cellGrid);
                     handler.SaveGeneration(cellGrid, generationNumber);
@@ -289,12 +305,13 @@ namespace MargaritaGOL
         {
             using(GOLContext db = new GOLContext())
             {
-                Game test = (Game)savedGamesListBox.SelectedItem;
+                Game selectedGame = (Game)savedGamesListBox.SelectedItem;
 
-                var gameToDelete = db.Games.SingleOrDefault(x => x.Id == test.Id);
+                var gameToDelete = db.Games.SingleOrDefault(x => x.Id == selectedGame.Id);
 
                 foreach (Generation gen in gameToDelete.GenerationList.ToList())
-                {
+               // Removes each cell state in every generation then deletes all generations for that game in DB
+                 {
                     foreach (CellState cell in gen.CellList.ToList())
                     {
                         db.CellStates.Remove(cell);
@@ -320,12 +337,22 @@ namespace MargaritaGOL
             PopulateListBox();
         }
 
+        /// <summary>
+        /// Sets the timer interval when you move the track bar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void trackBarSpeed_ValueChanged(object sender, EventArgs e)
         {
             generationTimer.Interval = trackBarSpeed.Value;
             labelSpeed.Text = "Interval speed: " + generationTimer.Interval.ToString();
         }
 
+        /// <summary>
+        /// Populates the board with a random amount of live cells
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void randomButton_Click(object sender, EventArgs e)
         {
             ResetGame();
@@ -341,7 +368,6 @@ namespace MargaritaGOL
                 var selectedCol = randomCol.Next(1, nrOfColumns);
 
                 cellGrid[selectedRow, selectedCol].IsAlive = true;
-
             }
 
             DisplayGeneration();

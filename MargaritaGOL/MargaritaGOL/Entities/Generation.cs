@@ -20,9 +20,13 @@ namespace MargaritaGOL
         public Generation(int generationNumber)
         {
             Id = generationNumber;
-            CellList = new List<CellState>();
+            CellList = new List<CellState>(); // Every generation contains a list of CellState's
         }
 
+        /// <summary>
+        /// Constructor for copying a whole generation to avoid reference-type problems
+        /// </summary>
+        /// <param name="genToCopy"></param>
         public Generation(Generation genToCopy)
         {
             this.Id = genToCopy.Id;

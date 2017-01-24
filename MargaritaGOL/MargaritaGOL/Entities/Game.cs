@@ -13,10 +13,14 @@ namespace MargaritaGOL
         public virtual List<Generation> GenerationList { get; set; }
         public Game()
         {
-            GenerationList = new List<Generation>();
+            GenerationList = new List<Generation>(); // Every game contains a list of Generations
             Name = DateTime.Now.ToString();
         }
 
+        /// <summary>
+        /// Constructor for copying a whole a game to avoid reference-type problems
+        /// </summary>
+        /// <param name="gameToCopy"></param>
         public Game(Game gameToCopy)
         {
             Name = DateTime.Now.ToString();
